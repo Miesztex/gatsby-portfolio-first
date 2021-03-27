@@ -6,16 +6,24 @@ import Services from '../components/Services';
 import Jobs from '../components/Jobs';
 import Projects from '../components/Projects';
 import Blogs from '../components/Blogs';
+
 export default ({ data }) => {
 	const {
-		allStrapiProjects: { nodes: projects },
+		allStrapiProjects: { nodes: featuredProjects },
+		allStrapiBlogs: { nodes: blogs },
 	} = data;
 	return (
 		<Layout>
 			<Hero />
 			<Services />
 			<Jobs />
-			<Projects projects={projects} title='featured projects' showLink />
+			<Projects
+				projects={featuredProjects}
+				title='featured projects'
+				showLink
+			/>
+			{/* 3 latest blogs with link */}
+			<Blogs blogs={blogs} title='blog' showLink />
 		</Layout>
 	);
 };
@@ -37,7 +45,24 @@ export const query = graphql`
 				image {
 					childImageSharp {
 						fluid {
-							src
+							...GatsbyImageSharpFluid
+						}
+					}
+				}
+			}
+		}
+		allStrapiBlogs(filter: {}, sort: { fields: date, order: DESC }, limit: 3) {
+			nodes {
+				id
+				description
+				date(formatString: "MMMM Do, YYYY")
+				content
+				category
+				slug
+				image {
+					childImageSharp {
+						fluid {
+							...GatsbyImageSharpFluid
 						}
 					}
 				}
@@ -45,4 +70,3 @@ export const query = graphql`
 		}
 	}
 `;
-// ...GatsbyImageSharpFluid
